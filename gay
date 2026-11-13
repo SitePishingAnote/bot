@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Mines - Loritta</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #1e1f22;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #2b2d31;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid #3f4147;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: #f2f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: #b5bac1;
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+        }
+
+        .btn-reset {
+            background-color: #5865f2;
+        }
+
+        .btn-reset:active {
+            background-color: #4752c4;
+        }
+
+        .btn-safe {
+            background-color: #23a55a;
+        }
+
+        .btn-safe:active {
+            background-color: #1a7f44;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: #1e1f22;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .cell {
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s, opacity 0.2s;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .cell:active {
+            transform: scale(0.93);
+        }
+
+        .cell.clicked {
+            opacity: 0.35;
+            transform: scale(0.95);
+        }
+
+        .cell .ordem {
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        .cell .chance {
+            font-size: 0.7rem;
+            margin-top: 4px;
+            opacity: 0.9;
+        }
+
+        /* Cores por nível de segurança */
+        .top-safe {
+            background-color: #1f8b4c;
+            border-color: #2ecc71;
+            color: #ffffff;
+        }
+
+        .good-safe {
+            background-color: #237a57;
+            border-color: #3ba55c;
+            color: #e8f8f5;
+        }
+
+        .neutral {
+            background-color: #9c6b19;
+            border-color: #f0b232;
+            color: #fff8e7;
+        }
+
+        .danger {
+            background-color: #8f2429;
+            border-color: #f23f43;
+            color: #ffd6d7;
+        }
+
+        .highlight-dim {
+            opacity: 0.2;
+        }
+
+        .legend {
+            background-color: #1e1f22;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #dbdee1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .tip-box {
+            margin-top: 14px;
+            background-color: rgba(88, 101, 242, 0.15);
+            border-left: 4px solid #5865f2;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #e3e5e8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>💣 Guia Mines (Loritta)</h1>
+            <p>Baseado nas suas 20 partidas (3 Minas)</p>
+        </header>
+
+        <div class="controls">
+            <button class="btn btn-safe" onclick="destacarTop5()">💎 Destacar Top 5</button>
+            <button class="btn btn-reset" onclick="resetarTabuleiro()">🔄 Limpar Cliques</button>
+        </div>
+
+        <div class="grid" id="tabuleiro">
+            <!-- Linha 1 -->
+            <div class="cell danger" onclick="marcar(this)">
+                <span class="ordem">❌</span>
+                <span class="chance">75%</span>
+            </div>
+            <div class="cell good-safe top5" onclick="marcar(this)">
+                <span class="ordem">4º</span>
+                <span class="chance">85%</span>
+            </div>
+            <div class="cell top-safe top5" onclick="marcar(this)">
+                <span class="ordem">2º</span>
+                <span class="chance">90%</span>
+            </div>
+            <div class="cell top-safe top5" onclick="marcar(this)">
+                <span class="ordem">1º</span>
+                <span class="chance">95%</span>
+            </div>
+
+            <!-- Linha 2 -->
+            <div class="cell good-safe top5" onclick="marcar(this)">
+                <span class="ordem">5º</span>
+                <span class="chance">85%</span>
+            </div>
+            <div class="cell neutral" onclick="marcar(this)">
+                <span class="ordem">⚠️</span>
+                <span class="chance">80%</span>
+            </div>
+            <div class="cell neutral" onclick="marcar(this)">
+                <span class="ordem">⚠️</span>
+                <span class="chance">80%</span>
+            </div>
+            <div class="cell danger" onclick="marcar(this)">
+                <span class="ordem">❌</span>
+                <span class="chance">60%</span>
+            </div>
+
+            <!-- Linha 3 -->
+            <div class="cell good-safe" onclick="marcar(this)">
+                <span class="ordem">6º</span>
+                <span class="chance">85%</span>
+            </div>
+            <div class="cell top-safe top5" onclick="marcar(this)">
+                <span class="ordem">3º</span>
+                <span class="chance">90%</span>
+            </div>
+            <div class="cell neutral" onclick="marcar(this)">
+                <span class="ordem">⚠️</span>
+                <span class="chance">80%</span>
+            </div>
+            <div class="cell good-safe" onclick="marcar(this)">
+                <span class="ordem">7º</span>
+                <span class="chance">85%</span>
+            </div>
+
+            <!-- Linha 4 -->
+            <div class="cell good-safe" onclick="marcar(this)">
+                <span class="ordem">8º</span>
+                <span class="chance">85%</span>
+            </div>
+            <div class="cell danger" onclick="marcar(this)">
+                <span class="ordem">❌</span>
+                <span class="chance">70%</span>
+            </div>
+            <div class="cell danger" onclick="marcar(this)">
+                <span class="ordem">❌</span>
+                <span class="chance">70%</span>
+            </div>
+            <div class="cell good-safe" onclick="marcar(this)">
+                <span class="ordem">9º</span>
+                <span class="chance">85%</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot" style="background:#2ecc71;"></div>
+                <span><strong>1º ao 3º (Verde Claro):</strong> Melhores lugares para começar.</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background:#3ba55c;"></div>
+                <span><strong>4º ao 9º (Verde Escuro):</strong> Bons para continuar o lucro.</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background:#f0b232;"></div>
+                <span><strong>⚠️ (Amarelo):</strong> Risco médio. Evite se puder.</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background:#f23f43;"></div>
+                <span><strong>❌ (Vermelho):</strong> Onde mais caíram bombas. Não clique!</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            💡 <strong>Dica de Ouro:</strong> Pare no <strong>4º clique (2,47x)</strong> ou no <strong>6º clique (4,53x)</strong> e retire seus sonhos antes que a bomba apareça.
+        </div>
+    </div>
+
+    <script>
+        let modoTop5 = false;
+
+        function marcar(elemento) {
+            elemento.classList.toggle('clicked');
+        }
+
+        function resetarTabuleiro() {
+            const celulas = document.querySelectorAll('.cell');
+            celulas.forEach(cell => {
+                cell.classList.remove('clicked');
+                cell.classList.remove('highlight-dim');
+            });
+            modoTop5 = false;
+        }
+
+        function destacarTop5() {
+            const celulas = document.querySelectorAll('.cell');
+            modoTop5 = !modoTop5;
+
+            celulas.forEach(cell => {
+                if (modoTop5) {
+                    if (!cell.classList.contains('top5')) {
+                        cell.classList.add('highlight-dim');
